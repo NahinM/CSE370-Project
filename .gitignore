@@ -2,5 +2,5 @@
 Include*
 Scripts*
 Lib*
-**/_pychache_*
+**/__pychache__*
 pyvenv.cfg*
