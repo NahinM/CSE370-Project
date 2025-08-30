@@ -1,27 +1,61 @@
 from flask import Flask,request,render_template,jsonify,session,redirect,url_for
+import mysql.connector
+
+mydb = mysql.connector.connect(
+host="localhost",
+user="nahin",
+password="123456",
+database = "ktms"
+)
+
 
 # Flask.secret_key
 
 app = Flask(__name__)
 nav_items = [("Home","/"),("Assets","/assets"),("Collection","/collections"),("Uploads","/uploads"),("Saved","/saved"),("Recent","/recent")]
 
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.secret_key = b'_5wqdsyht#y2L"Fd4Q8z\n\xec]/'
 
 @app.route("/")
 def home():
     if "username" in session:
-        return render_template("home.html" , navItems = nav_items, profile = "Nahin")
+        return render_template("home.html" , navItems = nav_items, profile = session["username"])
     return render_template("home.html" , navItems = nav_items, profile = None)
 
 @app.route("/login" , methods=['GET', 'POST'])
 def login():
+    bgImg = 'https://images.pexels.com/photos/443446/pexels-photo-443446.jpeg'
     if request.method == 'POST':
-        session['username'] = request.form['username']
+        id = request.form['id']
+        pswd = request.form['pass']
+        sql = f"SELECT id,password from users where id='{id}'"
+        cursor = mydb.cursor()
+        cursor.execute(sql)
+        ret = cursor.fetchall()
+        if len(ret)==0: return render_template("login.html", backimage = bgImg,navItems = nav_items, message = ("username not found",None))
+        db_id,db_pswd = ret[0]
+        if db_pswd!=pswd: return render_template("login.html", backimage = bgImg,navItems = nav_items, message = (None,"password incorrect"))
+    
+        session['username'] = id
         return redirect('/')
-    return render_template("login.html", backimage = 'https://images.pexels.com/photos/443446/pexels-photo-443446.jpeg',navItems = nav_items)
+    return render_template("login.html", backimage = bgImg,navItems = nav_items, message = (None,None))
 
-@app.route("/signup")
+@app.route("/signup" , methods=['GET', 'POST'])
 def signup():
+    if request.method == 'POST':
+        id = request.form["id"]
+        passd = request.form["pass"]
+        fname = request.form["fname"]
+        lname = request.form["lname"]
+        email = request.form["email"]
+    
+        sql = f"INSERT INTO users VALUES (%s, %s, %s, %s, %s)"
+        val = (id,passd,fname,lname,email)
+        cursor = mydb.cursor()
+        cursor.execute(sql,val)
+        mydb.commit()
+
+        return f"id={id},pass={passd},fname={fname},lname={lname},email={email}"
     return render_template("signup.html" , backimage = 'https://images.pexels.com/photos/443446/pexels-photo-443446.jpeg' ,navItems = nav_items)
 
 @app.route("/assets")

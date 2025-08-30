@@ -5,13 +5,22 @@
         <div  class="position-absolute top-50 start-50 translate-middle p-5 text-dark" style="backdrop-filter: blur(10px);">
             <form action="/login" method="post">
             <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Email address</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" name="username">
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                <label for="exampleInputEmail1" class="form-label text-light">Email address</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" name="id">
+                
+                {% if message[0] %}
+                    <div id="emailHelp" class="form-text text-danger bg-dark">{{message[0]}}</div>
+                {% else %}
+                    <div id="emailHelp" class="form-text text-warning ">We'll never share your email with anyone else.</div>
+                {% endif %}
+                
             </div>
             <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" name="password">
+                <label for="exampleInputPassword1" class="form-label text-light">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" name="pass">
+                {% if message[1] %}
+                <div id="emailHelp" class="form-text text-danger bg-dark">{{message[1]}}</div>
+                {% endif %}
             </div>
             <input type="submit" class="btn btn-success" value="Login">
             <a class="btn btn-primary" href="/signup">Sign in</a>
