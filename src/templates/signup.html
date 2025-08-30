@@ -7,22 +7,28 @@
             <div class="input-group mb-3">
             <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" name="id">
             </div>
+            {% if msg %}
+            <div id="emailHelp" class="form-text text-danger bg-dark">{{msg}}</div>
+            {% else %}
+            <div id="emailHelp" class="form-text text-light bg-dark">Type a unique Username</div>
+            {% endif %}
             <div class="input-group mb-3">
             <input type="text" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1" name="pass">
             </div>
             <div class="input-group mb-3">
             <span class="input-group-text">First Name</span>
-            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)" name="fname">
+            <input type="text" class="form-control" aria-label="first name" name="fname">
             </div>
             <div class="input-group mb-3">
             <span class="input-group-text">Last Name</span>
-            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)" name="lname">
+            <input type="text" class="form-control" aria-label="last name" name="lname">
             </div>
             <div class="input-group mb-3">
             <span class="input-group-text">Email</span>
-            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)" name="email">
+            <input type="text" class="form-control" aria-label="email" name="email"><br>
             </div>
-            <input type="submit" class="btn btn-success" value="Sign in">
+            <div id="emailHelp" class="form-text text-warning">We'll never share your email with anyone else.</div>
+            <input type="submit" class="btn btn-success" value="Sign up">
             </form>
         </div>
 

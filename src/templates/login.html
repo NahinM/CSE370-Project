@@ -10,8 +10,6 @@
                 
                 {% if message[0] %}
                     <div id="emailHelp" class="form-text text-danger bg-dark">{{message[0]}}</div>
-                {% else %}
-                    <div id="emailHelp" class="form-text text-warning ">We'll never share your email with anyone else.</div>
                 {% endif %}
                 
             </div>
@@ -23,7 +21,7 @@
                 {% endif %}
             </div>
             <input type="submit" class="btn btn-success" value="Login">
-            <a class="btn btn-primary" href="/signup">Sign in</a>
+            <a class="btn btn-primary" href="/signup">Sign up</a>
             </form>
     </div>
 {% endblock  %}
