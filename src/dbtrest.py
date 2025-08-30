@@ -11,6 +11,6 @@ def connect_to(dbName,sql):
     cursor.execute(sql)
     return cursor.fetchall()
 
-results = connect_to("ktms","select id,password from users where id = 'aaa'")
-print(results)
+results = connect_to("ktms","select max(id) from assets")
+print(results[0][0])
 

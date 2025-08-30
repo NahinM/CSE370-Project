@@ -1,5 +1,5 @@
 from flask import Flask,request,render_template,jsonify,session,redirect,url_for
-import mysql.connector
+import mysql.connector,datetime
 
 mydb = mysql.connector.connect(
 host="localhost",
@@ -10,7 +10,7 @@ database = "ktms"
 
 
 app = Flask(__name__)
-nav_items = [("Home","/"),("Assets","/assets"),("Collection","/collections"),("Uploads","/uploads"),("Saved","/saved"),("Recent","/recent")]
+nav_items = [("Home","/"),("Assets","/assets"),("Collection","/collections"),("Upload","/upload"),("Saved","/saved"),("Recent","/recent")]
 
 # Flask.secret_key
 app.secret_key = b'_5wqdsyht#y2L"Fd4Q8z\n\xec]/'
@@ -34,7 +34,7 @@ def login():
         if len(ret)==0: return render_template("login.html", backimage = bgImg,navItems = nav_items, message = ("username not found",None))
         db_id,db_pswd = ret[0]
         if db_pswd!=pswd: return render_template("login.html", backimage = bgImg,navItems = nav_items, message = (None,"password incorrect"))
-        
+
         session['username'] = id
         return redirect('/')
     return render_template("login.html", backimage = bgImg,navItems = nav_items, message = (None,None))
@@ -74,9 +74,30 @@ def assets():
 def saved():
     return render_template("saved.html",navItems = nav_items)
 
-@app.route("/uploads")
+@app.route("/upload" , methods=['GET', 'POST'])
 def uploads():
-    return render_template("uploads.html",navItems = nav_items)
+    bgImg = 'https://images.pexels.com/photos/443446/pexels-photo-443446.jpeg'
+
+    if request.method == "POST":
+        title = request.form["title"]
+        des = request.form["description"]
+        site = request.form["site"]
+        main = request.form["mainCategory"]
+        sub = request.form["subCategory"]
+        d = datetime.datetime.now().strftime("%Y-%m-%d")
+        typ = request.form["type"]
+
+        sql = "select max(id) from assets"
+        cursor = mydb.cursor()
+        cursor.execute(sql)
+        id,ret = 1,cursor.fetchall()[0][0]
+        if ret: id += int(ret)
+        sql = f"INSERT INTO assets VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (id,title,des,site,d,d,main,sub,typ)
+        cursor.execute(sql,val)
+        mydb.commit()
+        return redirect("/upload")
+    return render_template("uploads.html",backimage = bgImg, navItems = nav_items)
 
 @app.route('/search')
 def search():

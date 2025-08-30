@@ -2,19 +2,37 @@
 
 {% block content %}
 <br><br>
-<div class="d-flex justify-content-start flex-wrap">
-
-    {% for i in range(10) %}
-    <div class="p-2">
-        <div class="card" style="width: 18rem;">
-            <img src="https://images.pexels.com/photos/807598/pexels-photo-807598.jpeg" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
+<div class="container position-relative vh-100">
+    <div  class="position-absolute top-50 start-50 translate-middle p-5 text-dark" style="backdrop-filter: blur(10px);">
+    <form action="/upload" method="post">
+        <div class="mb-3">
+            <label class="form-label text-light">Title</label>
+            <input class="form-control" type="text" placeholder="Title" aria-label="default input example" name="title">
         </div>
+        <div class="mb-3">
+            <label class="form-label text-light">Description</label>
+            <input class="form-control" type="text" placeholder="Description" aria-label="default input example" name="description">
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-light">Site Link</label>
+            <input class="form-control" type="text" placeholder="Site Link" aria-label="default input example" name="site">
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-light">Main category</label>
+            <input class="form-control" type="text" placeholder="Main Category" aria-label="default input example" name="mainCategory">
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-light">Sub category</label>
+            <input class="form-control" type="text" placeholder="Sub Category" aria-label="default input example" name="subCategory">
+        </div>
+        <select class="form-select" aria-label="Default select example" name="type">
+        <option selected>Type</option>
+        <option value="video">Video</option>
+        <option value="graphics">Graphics</option>
+        <option value="audio">Audio</option>
+        </select>
+        <input type="submit" class="btn btn-success" value="Upload">
+    </form>
     </div>
-    {% endfor %}
-    </div>
+</div>
 {% endblock  %}
