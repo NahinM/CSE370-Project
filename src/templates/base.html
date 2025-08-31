@@ -28,7 +28,7 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
             </li>
             {% for name,link in navItems %}
             <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{{link}}">
+            <a type="button" class="btn btn-dark" href="{{link}}">
                 {{name}}
             </a>
             </li>
@@ -39,7 +39,7 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
             <input class="form-control me-2 dropdown-toggle" type="search" placeholder="Search" aria-label="Search" ng-model="q" ng-change="find()" data-bs-toggle="dropdown" aria-expanded="true"/>
             <ul class="dropdown-menu w-6">
               {% raw %}
-              <li class="p-2" ng-repeat="x in Search_datas"> {{x.name}}</li>
+              <li class="p-2" ng-repeat="x in Search_datas"> {{x.title}}</li>
               {% endraw %}
             </ul>
             </div>
@@ -51,7 +51,8 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
                 {{profile}}
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">profile</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">My uploads</a></li>
                 <li><a class="dropdown-item" href="/logout">logout</a></li>
             </ul>
             </div>
@@ -111,17 +112,10 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
 <script>
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope, $http) {
+    $scope.Search_datas = [];
   {% block script %}
   
   {% endblock %}
-  $scope.Search_datas = [];
-  $scope.q="";
-  $scope.find = function() {
-  $http.get(`/search?q=${$scope.q}`)
-  .then(function(response) {
-    $scope.Search_datas = response.data;
-  });
-  }
 });
 </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>

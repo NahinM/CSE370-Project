@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br><br>
+{% if getDetail %}
+<div class="container" style="backdrop-filter: blur(10px);">
+  <h1 class="text-light">{{getDetail[0]}}</h1>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item" style="background-color: none;">
+        <h5>Type: <span class="badge text-bg-info">{{getDetail[1]}}</span></h5>
+    </li>
+    <li class="list-group-item">
+        <h5>Website:</h5>
+        <a href="">{{getDetail[2]}}</a>
+    </li>
+    <li class="list-group-item">
+        <h5>Description</h5>
+        <p>{{getDetail[3]}}</p>
+    </li>
+    <li class="list-group-item">
+        <span class="badge text-bg-secondary">Created:</span>
+        <span class="badge text-bg-success">{{getDetail[4]}}</span>
+        <span class="badge text-bg-secondary">Updated:</span>
+        <span class="badge text-bg-success">{{getDetail[5]}}</span>
+    </li>
+    <li class="list-group-item">
+        <h5>Main Category</h5>
+        <p>{{getDetail[6]}}</p>
+    </li>
+    <li class="list-group-item">
+        <h5>Sub Category</h5>
+        <p>{{getDetail[7]}}</p>
+    </li>
+  </ul>
+</div>
+{% else %}
+<h1>Details not found</h1>
+{% endif %}
+
+{% endblock  %}
+
+{% block script %}
+ $scope.q="";
+  $scope.find = function() {
+    $http.get(`/search?f=search&q=${$scope.q}`)
+    .then(function(response) {
+        $scope.Search_datas = response.data;
+    });
+  }
+{% endblock %}

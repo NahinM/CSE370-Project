@@ -1,20 +1,35 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<br><br>
+<br><br><br>
 <div class="d-flex justify-content-start flex-wrap">
+    {% raw %}
+    <div class="p-3" ng-repeat=" asset in allAsset">
+        <div class="card position-relative" style="width: 18rem;box-shadow: 0px 0px 5px black;">
+            <div class="position-relative">
+                <!-- <div class="btn btn-info active "></div> -->
+                <span class="badge rounded-pill text-bg-info position-absolute top-0 start-100 translate-middle">{{asset.typp}}</span>
+                <img src="https://images.pexels.com/photos/807598/pexels-photo-807598.jpeg" class="card-img-top" alt="...">
+            </div>
 
-    {% for i in range(10) %}
-    <div class="p-2">
-        <div class="card" style="width: 18rem;">
-            <img src="https://images.pexels.com/photos/807598/pexels-photo-807598.jpeg" class="card-img-top" alt="...">
             <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <h5 class="card-title">{{asset.title}}</h5>
+                <p class="card-text">{{asset.description}}</p>
+                <a ng-href="{{asset.visite}}" class="btn btn-primary">Visite</a>
+                <a ng-href="{{asset.detail}}" class="btn btn-primary">Detail</a>
             </div>
         </div>
     </div>
-    {% endfor %}
-    </div>
+    {% endraw %}
+</div>
 {% endblock  %}
+
+{% block script %}
+  $scope.mainctg = "none";
+  $scope.subctg = "none";
+  $scope.allAsset = [];
+  $http.get(`/search?f=asset&main=${$scope.mainctg},sub=${$scope.subctg}`)
+    .then(function(response) {
+        $scope.allAsset = response.data;
+    });
+{% endblock %}

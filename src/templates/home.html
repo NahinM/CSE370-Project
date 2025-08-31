@@ -7,3 +7,13 @@
 
 <h1>This is home</h1>
 {% endblock  %}
+
+{% block script %}
+ $scope.q="";
+  $scope.find = function() {
+    $http.get(`/search?f=search&q=${$scope.q}`)
+    .then(function(response) {
+        $scope.Search_datas = response.data;
+    });
+  }
+{% endblock %}

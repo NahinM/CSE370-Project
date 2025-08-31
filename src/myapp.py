@@ -3,9 +3,10 @@ import mysql.connector,datetime
 
 mydb = mysql.connector.connect(
 host="localhost",
-user="nahin",
-password="123456",
-database = "ktms"
+user="root",
+password="",
+database = "ktms",
+port=3307
 )
 
 
@@ -28,9 +29,9 @@ def login():
         id = request.form['id']
         pswd = request.form['pass']
         sql = f"SELECT id,password from users where id='{id}'"
-        cursor = mydb.cursor()
-        cursor.execute(sql)
-        ret = cursor.fetchall()
+        mycursor = mydb.cursor()
+        mycursor.execute(sql)
+        ret = mycursor.fetchall()
         if len(ret)==0: return render_template("login.html", backimage = bgImg,navItems = nav_items, message = ("username not found",None))
         db_id,db_pswd = ret[0]
         if db_pswd!=pswd: return render_template("login.html", backimage = bgImg,navItems = nav_items, message = (None,"password incorrect"))
@@ -51,15 +52,14 @@ def signup():
         email = request.form["email"]
 
         sql = f"SELECT id,password from users where id='{id}'"
-        cursor = mydb.cursor()
-        cursor.execute(sql)
-        ret = cursor.fetchall()
+        mycursor = mydb.cursor()
+        mycursor.execute(sql)
+        ret = mycursor.fetchall()
         if len(ret)!=0: return render_template("signup.html" , backimage = bgImg ,navItems = nav_items , msg = "username already taken!")
     
         sql = f"INSERT INTO users VALUES (%s, %s, %s, %s, %s)"
         val = (id,passd,fname,lname,email)
-        cursor = mydb.cursor()
-        cursor.execute(sql,val)
+        mycursor.execute(sql,val)
         mydb.commit()
 
         session['username'] = id
@@ -70,9 +70,23 @@ def signup():
 def assets():
     return render_template("assets.html",navItems = nav_items)
 
+@app.route("/detail")
+def detail():
+    bgImg = "https://images.pexels.com/photos/15727975/pexels-photo-15727975.jpeg"
+    id = request.args.get('id')
+    mycursor = mydb.cursor()
+    mycursor.execute(f"SELECT title,type,siteLink,description,createdAt,updatedAt,mainCategory,subCategory FROM assets where id ='{id}'")
+    ret = mycursor.fetchall()
+    if len(ret)==0: render_template("detail.html",backimage = bgImg,navItems = nav_items, getDetail = None)
+
+    d = ret[0]
+    return render_template("detail.html",backimage = bgImg,navItems = nav_items, getDetail = d, profile=session["username"])
+
 @app.route("/saved")
 def saved():
-    return render_template("saved.html",navItems = nav_items)
+    if "username" in session:
+        return render_template("saved.html",navItems = nav_items, profile=session["username"])
+    return "page not found"
 
 @app.route("/upload" , methods=['GET', 'POST'])
 def uploads():
@@ -88,27 +102,43 @@ def uploads():
         typ = request.form["type"]
 
         sql = "select max(id) from assets"
-        cursor = mydb.cursor()
-        cursor.execute(sql)
-        id,ret = 1,cursor.fetchall()[0][0]
+        mycursor = mydb.cursor()
+        mycursor.execute(sql)
+        id,ret = 1,mycursor.fetchall()[0][0]
         if ret: id += int(ret)
         sql = f"INSERT INTO assets VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         val = (id,title,des,site,d,d,main,sub,typ)
-        cursor.execute(sql,val)
+        mycursor.execute(sql,val)
+        mydb.commit()
+
+        sql = "insert into uploaded_by values(%s, %s)"
+        mycursor.execute(sql,(session["username"],id))
         mydb.commit()
         return redirect("/upload")
-    return render_template("uploads.html",backimage = bgImg, navItems = nav_items)
+    return render_template("uploads.html",backimage = bgImg, navItems = nav_items,profile=session["username"])
 
 @app.route('/search')
 def search():
-    q = request.args.get('q')
-    if q:
-        # mycursor.execute("SELECT * FROM accounts WHERE name LIKE %s",("%"+q+"%",))
-        # send = [dict(user=u,name=n,email=e,age=a,pswd=p) for u,n,e,a,p in mycursor.fetchall()]
-        send = [dict(name=f"Somting{i}",id=i) for i in range(10)]
+    f = request.args.get('f')
+    if f=="search":
+        q = request.args.get('q')
+        if q:
+            mycursor = mydb.cursor()
+            mycursor.execute("SELECT title FROM assets WHERE title LIKE %s",("%"+q+"%",))
+            send = [dict(title=str(t[0])) for t in mycursor.fetchall()]
+            return jsonify(send if send else [dict(title="not available!")])
+        else:
+            return jsonify([])
+        
+    if f=="asset":
+        main = request.args.get('main')
+        sub = request.args.get('sub')
+
+        sql = "SELECT id,title,description,type,siteLink FROM assets"
+        mycursor = mydb.cursor()
+        mycursor.execute(sql)
+        send = [dict(id=str(i),title=str(tl),description=str(d),typp=str(tp),visite=str(l),detail=f"/detail?id={i}") for i,tl,d,tp,l in mycursor.fetchall()]
         return jsonify(send)
-    else:
-        return jsonify([])
 
 @app.route('/logout')
 def logout():
