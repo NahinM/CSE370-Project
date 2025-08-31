@@ -4,32 +4,46 @@
 <br><br><br>
 {% if getDetail %}
 <div class="container" style="backdrop-filter: blur(10px);">
-  <h1 class="text-light">{{getDetail[0]}}</h1>
+  <h1 class="text-light">{{getDetail["asset"][0]}}</h1>
   <ul class="list-group list-group-flush">
     <li class="list-group-item" style="background-color: none;">
-        <h5>Type: <span class="badge text-bg-info">{{getDetail[1]}}</span></h5>
+        <h5>Type: <span class="badge text-bg-info">{{getDetail["asset"][1]}}</span></h5>
+    </li>
+    <li class="list-group-item">
+        <h5>Uploaded by:</h5>
+        <p>{{getDetail["owner"][0]}}</p>
     </li>
     <li class="list-group-item">
         <h5>Website:</h5>
-        <a href="">{{getDetail[2]}}</a>
+        <a href="">{{getDetail["asset"][2]}}</a>
     </li>
     <li class="list-group-item">
         <h5>Description</h5>
-        <p>{{getDetail[3]}}</p>
+        <p>{{getDetail["asset"][3]}}</p>
     </li>
     <li class="list-group-item">
         <span class="badge text-bg-secondary">Created:</span>
-        <span class="badge text-bg-success">{{getDetail[4]}}</span>
+        <span class="badge text-bg-success">{{getDetail["asset"][4]}}</span>
         <span class="badge text-bg-secondary">Updated:</span>
-        <span class="badge text-bg-success">{{getDetail[5]}}</span>
+        <span class="badge text-bg-success">{{getDetail["asset"][5]}}</span>
     </li>
     <li class="list-group-item">
         <h5>Main Category</h5>
-        <p>{{getDetail[6]}}</p>
+        {% for item in getDetail["main"] %}
+        <p>{{item[0]}}</p>
+        {% endfor %}
     </li>
     <li class="list-group-item">
         <h5>Sub Category</h5>
-        <p>{{getDetail[7]}}</p>
+        {% for item in getDetail["sub"] %}
+        <p>{{item[0]}}</p>
+        {% endfor %}
+    </li>
+    <li class="list-group-item">
+        <h5>Genre</h5>
+        {% for item in getDetail["genre"] %}
+        <p>{{item[0]}}</p>
+        {% endfor %}
     </li>
   </ul>
 </div>

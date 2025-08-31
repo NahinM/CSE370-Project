@@ -25,11 +25,18 @@
 {% endblock  %}
 
 {% block script %}
-  $scope.mainctg = "none";
-  $scope.subctg = "none";
+  $scope.mainctg = "";
+  $scope.subctg = "";
   $scope.allAsset = [];
-  $http.get(`/search?f=asset&main=${$scope.mainctg},sub=${$scope.subctg}`)
+  $scope.q = ""
+  $http.get(`/search?f=asset&q=&main=${$scope.mainctg}&sub=${$scope.subctg}`)
     .then(function(response) {
         $scope.allAsset = response.data;
     });
+  $scope.find = function() {
+    $http.get(`/search?f=asset&q=${$scope.q}&main=${$scope.mainctg}&sub=${$scope.subctg}`)
+    .then(function(response) {
+        $scope.allAsset = response.data;
+    });
+  }
 {% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br><br>
+{% if getDetail %}
+<div class="container" style="backdrop-filter: blur(10px);">
+  <h1 class="text-dark">Profile Details</h1>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item" style="background-color: none;">
+        <h5>Username:</h5>
+        <p>{{getDetail[0]}}</p>
+    </li>
+    <li class="list-group-item">
+        <h5>Full Name:</h5>
+        <p>{{getDetail[1]}} {{getDetail[2]}}</p>
+    </li>
+    <li class="list-group-item">
+        <h5>Email:</h5>
+        <a href="">{{getDetail[3]}}</a>
+    </li>
+  </ul>
+</div>
+{% else %}
+<h1>Details not found</h1>
+{% endif %}
+
+{% endblock  %}
+
+{% block script %}
+ $scope.q="";
+  $scope.find = function() {
+    $http.get(`/search?f=search&q=${$scope.q}`)
+    .then(function(response) {
+        $scope.Search_datas = response.data;
+    });
+  }
+{% endblock %}

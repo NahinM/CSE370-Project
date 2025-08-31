@@ -1,38 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<br><br>
-<div class="container position-relative vh-100">
-    <div  class="position-absolute top-50 start-50 translate-middle p-5 text-dark" style="backdrop-filter: blur(10px);">
-    <form action="/upload" method="post">
-        <div class="mb-3">
-            <label class="form-label text-light">Title</label>
-            <input class="form-control" type="text" placeholder="Title" aria-label="default input example" name="title">
-        </div>
-        <div class="mb-3">
-            <label class="form-label text-light">Description</label>
-            <input class="form-control" type="text" placeholder="Description" aria-label="default input example" name="description">
-        </div>
-        <div class="mb-3">
-            <label class="form-label text-light">Site Link</label>
-            <input class="form-control" type="text" placeholder="Site Link" aria-label="default input example" name="site">
-        </div>
-        <div class="mb-3">
-            <label class="form-label text-light">Main category</label>
-            <input class="form-control" type="text" placeholder="Main Category" aria-label="default input example" name="mainCategory">
-        </div>
-        <div class="mb-3">
-            <label class="form-label text-light">Sub category</label>
-            <input class="form-control" type="text" placeholder="Sub Category" aria-label="default input example" name="subCategory">
-        </div>
-        <select class="form-select" aria-label="Default select example" name="type">
-        <option selected>Type</option>
-        <option value="video">Video</option>
-        <option value="graphics">Graphics</option>
-        <option value="audio">Audio</option>
-        </select>
-        <input type="submit" class="btn btn-success" value="Upload">
-    </form>
+<br><br><br>
+<div class="container" style="backdrop-filter: blur(10px);">
+    <h1>Upload An Asset</h1>
+    <form action="/upload" , method="post">
+    <div class="input-group mb-3 w-75">
+    <span class="input-group-text" id="title">Title</span>
+    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="title", name="title">
     </div>
+
+    <div class="input-group mb-3 w-75">
+    <span class="input-group-text" id="link">Site Link</span>
+    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="link" name="site">
+    </div>
+
+    <div class="mb-3">
+    <label for="description" class="form-label">Description</label>
+    <textarea class="form-control" id="description" rows="3" name="description" name="description"></textarea>
+    </div>
+
+    <select class="form-select w-25" aria-label="Default select example" name="type">
+    <option selected>Select a type</option>
+    <option value="video">Video</option>
+    <option value="audio">Audio</option>
+    <option value="graphics">Graphics</option>
+    </select>
+
+    <div class="mb-3">
+    <label for="mainctg" class="form-label">Main Category</label>
+    <textarea class="form-control" id="mainctg" rows="3" name="main" placeholder="input as a,b,c"></textarea>
+    </div>
+
+    <div class="mb-3">
+    <label for="subctg" class="form-label">Sub Category</label>
+    <textarea class="form-control" id="subctg" rows="3" name="sub" placeholder="input as a,b,c"></textarea>
+    </div>
+
+    <div class="mb-3">
+    <label for="genre" class="form-label">Genre</label>
+    <textarea class="form-control" id="genre" rows="3" name="genre" placeholder="input as a,b,c"></textarea>
+    </div>
+    <input class="btn btn-success" type="submit" value="Submit">
+    </form>
+    <br>
 </div>
 {% endblock  %}
