@@ -21,14 +21,22 @@ def get_id(table,val):
     return ret[0][0]
 
 def insert_to(table:str,val:tuple):
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     sql = f"INSERT INTO {table} VALUES({" ,".join(["%s"]*len(val))})"
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     mycursor = mydb.cursor()
     mycursor.execute(sql,val)
     mydb.commit()
     mydb.close()
 
-# def count_rec(table:str,val)
+
+def count_forname(table,name):
+    sql = f"select count(*) from {table} where name='{name}'"
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    mycursor = mydb.cursor()
+    mycursor.execute(sql)
+    ret = mycursor.fetchone()
+    mydb.close()
+    return ret[0]
 
 def get_all(table,val):
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
@@ -40,14 +48,12 @@ def get_all(table,val):
     return ret
 
 def check_insert(table,lst:list):
-    vals = get_all(table,"name")
     for item in lst:
         if item=="": continue
-        if len(vals)==0: insert_to(table,(getNextId(table),item.strip()))
-        if item not in vals: insert_to(table,(getNextId(table),item.strip()))
+        if count_forname(table,item)==0: insert_to(table,(getNextId(table),item.strip()))
 
 def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None):
-    sql = f"SELECT a.id,a.title,a.description,a.type,a.siteLink FROM"
+    sql = f"SELECT DISTINCT a.id,a.title,a.description,a.type,a.siteLink,a.contentlink FROM"
     sql += " assets a,"
     filtering = ""
     if main: filtering = f" and m.name in ({','.join([f"'{x}'" for x in main])})"
@@ -58,13 +64,13 @@ def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None):
     filtering = ""
     if genre: filtering = f" and g.name in ({','.join([f"'{x}'" for x in genre])})"
     sql+= f" (SELECT DISTINCT(r.asset_id) FROM asset_genre r, genre g where r.genre_id=g.id{filtering}) g"
-    if byUser: sql += f", (SELECT asset_id FROM uploaded_by where user_id='{byUser}') u"
+    if byUser: sql += f", (SELECT DISTINCT(asset_id) FROM uploaded_by where user_id='{byUser}') u"
     sql += " WHERE a.id=m.asset_id AND a.id=s.asset_id AND a.id=g.asset_id"
     if byUser: sql+= " AND u.asset_id=a.id"
-    if q: sql += f" and a.title like '%{q}%'"
+    if q: sql += f" and a.title like '%{q.upper()}%' or a.title like '%{q.lower()}%'"
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
-    send = [dict(id=str(i),title=str(tl),description=str(d),typp=str(tp),visite=str(l),detail=f"/detail?id={i}") for i,tl,d,tp,l in mycursor.fetchall()]
+    send = [dict(id=str(i),title=str(tl),description=str(d),contentsrc=cl,typp=str(tp),visite=str(l),detail=f"/detail?id={i}") for i,tl,d,tp,l,cl in mycursor.fetchall()]
     mydb.close()
     return send

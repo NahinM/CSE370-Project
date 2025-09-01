@@ -30,12 +30,13 @@
   $scope.genre = "";
   $scope.allAsset = [];
   $scope.q = ""
-  $http.get(`/search?f=asset&q=&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=`)
+  $scope.user = "{{profile if profile else ""}}";
+  $http.get(`/search?f=asset&q=&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=${$scope.user}`)
     .then(function(response) {
         $scope.allAsset = response.data;
     });
   $scope.find = function() {
-    $http.get(`/search?f=asset&q=${$scope.q}&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=`)
+    $http.get(`/search?f=asset&q=${$scope.q}&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=${$scope.user}`)
     .then(function(response) {
         $scope.allAsset = response.data;
     });

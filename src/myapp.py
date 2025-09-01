@@ -88,6 +88,7 @@ def uploads():
     if request.method == "POST":
         title = request.form["title"]
         site = request.form["site"]
+        clink = request.form["clink"]
         des = request.form["description"]
         typ = request.form["type"]
         main = str(request.form["main"]).split(",")
@@ -102,7 +103,7 @@ def uploads():
 
         # insert to
         # asset (id,title,description,siteLink,createdAt,updatedAt,type)
-        insert_to("assets",(asset_id,title,des,site,d,d,typ))
+        insert_to("assets",(asset_id,title,des,site,clink,d,d,typ))
         # uploaded_by (user_id,asset_id)
         insert_to("uploaded_by",(user_id,asset_id))
         # mainCategory(id,name)
@@ -133,6 +134,14 @@ def assets():
     prf = None
     if "username" in session: prf = session["username"]
     return render_template("assets.html",navItems = nav_items, profile=prf)
+
+@app.route("/myupload")
+def myupload():
+    prf = None
+    if "username" in session:
+        prf = session["username"]
+        return render_template("myuploads.html",navItems = nav_items, profile=prf)
+    return redirect('/login')
 
 @app.route("/detail")
 def detail():
@@ -186,7 +195,7 @@ def search():
         sub = request.args.get('sub')
         g = request.args.get('genre')
         q = request.args.get('q')
-        u = request.args.get('q')
+        u = request.args.get('user')
         if u=="": u=None
         if q=="": q = None
         if main: main = [x for x in main.split(",") if x!=""]
