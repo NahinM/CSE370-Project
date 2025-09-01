@@ -25,10 +25,11 @@
 {% endblock  %}
 
 {% block script %}
-  $scope.mainctg = "none";
-  $scope.subctg = "none";
+  $scope.mainctg = "";
+  $scope.subctg = "";
   $scope.allAsset = [];
-  $http.get(`/search?f=asset&main=${$scope.mainctg},sub=${$scope.subctg}`)
+  $scope.genre = ""
+  $http.get(`/search?f=asset&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}`)
     .then(function(response) {
         $scope.allAsset = response.data;
     });

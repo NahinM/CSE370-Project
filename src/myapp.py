@@ -3,7 +3,7 @@ import mysql.connector,datetime
 from myDatabase import *
 
 app = Flask(__name__)
-nav_items = [("Home","/"),("Assets","/assets"),("Collection","/collections"),("Upload","/upload"),("Saved","/saved")]
+nav_items = [("Home","/"),("Assets","/assets"),("Collection","/collections"),("Upload","/upload"),("Saved","/bookmarked")]
 
 # Flask.secret_key
 app.secret_key = b'_5wqdsyht#y2L"Fd4Q8z\n\xec]/'
@@ -160,10 +160,10 @@ def detail():
 
     return render_template("detail.html",backimage = bgImg,navItems = nav_items, getDetail = dict(asset=getAsset,genre=getGenre,main=getMain,sub=getSub,owner=getUser), profile=session["username"])
 
-@app.route("/saved")
-def saved():
+@app.route("/bookmarked")
+def bookmarked():
     if "username" in session:
-        return render_template("saved.html",navItems = nav_items, profile=session["username"])
+        return render_template("bookmarked.html",navItems = nav_items, profile=session["username"])
     return "page not found"
 
 @app.route('/search')
@@ -184,13 +184,21 @@ def search():
     if f=="asset":
         main = request.args.get('main')
         sub = request.args.get('sub')
+        g = request.args.get('genre')
         q = request.args.get('q')
-        print(main,sub,q)
-        sql = f"SELECT id,title,description,type,siteLink FROM assets"
-        if q: sql += "title LIKE '%{q}%'"
-        mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
-        mycursor = mydb.cursor()
-        mycursor.execute(sql)
-        send = [dict(id=str(i),title=str(tl),description=str(d),typp=str(tp),visite=str(l),detail=f"/detail?id={i}") for i,tl,d,tp,l in mycursor.fetchall()]
-        mydb.close()
-        return jsonify(send)
+        u = request.args.get('q')
+        if u=="": u=None
+        if q=="": q = None
+        if main: main = [x for x in main.split(",") if x!=""]
+        else : main = None
+        if sub: sub = [x for x in sub.split(",") if x!=""]
+        else : sub = None
+        if g: g = [x for x in g.split(",") if x!=""]
+        else : g = None
+        return jsonify(asset_filter(q,main,sub,g,u))
+    
+    if f=="offcanvas":
+        g = [dict(id=i,name=n) for i,n in get_all("genre","id,name")]
+        m = [dict(id=i,name=n) for i,n in get_all("maincategory","id,name")]
+        s = [dict(id=i,name=n) for i,n in get_all("subcategory","id,name")]
+        return dict(genre=g,main=m,sub=s)

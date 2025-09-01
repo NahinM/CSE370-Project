@@ -27,14 +27,15 @@
 {% block script %}
   $scope.mainctg = "";
   $scope.subctg = "";
+  $scope.genre = "";
   $scope.allAsset = [];
   $scope.q = ""
-  $http.get(`/search?f=asset&q=&main=${$scope.mainctg}&sub=${$scope.subctg}`)
+  $http.get(`/search?f=asset&q=&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=`)
     .then(function(response) {
         $scope.allAsset = response.data;
     });
   $scope.find = function() {
-    $http.get(`/search?f=asset&q=${$scope.q}&main=${$scope.mainctg}&sub=${$scope.subctg}`)
+    $http.get(`/search?f=asset&q=${$scope.q}&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=`)
     .then(function(response) {
         $scope.allAsset = response.data;
     });
