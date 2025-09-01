@@ -6,10 +6,13 @@
     {% raw %}
     <div class="p-3" ng-repeat=" asset in allAsset">
         <div class="card position-relative" style="width: 18rem;box-shadow: 0px 0px 5px black;">
-            <div class="position-relative">
+            <div class="position-relative" ng-switch="asset.typp">
                 <!-- <div class="btn btn-info active "></div> -->
                 <span class="badge rounded-pill text-bg-info position-absolute top-0 start-100 translate-middle">{{asset.typp}}</span>
-                <img ng-src="{{asset.contentsrc}}" class="card-img-top" alt="...">
+                <img ng-switch-when="graphics" ng-src="{{asset.contentsrc}}" class="card-img-top" alt="..." width="300" height="250">
+                <div ng-switch-when="video" class="ratio ratio-1x1">
+                <iframe ng-src="{{asset.contentsrc}}" title="YouTube video" allowfullscreen></iframe>
+                </div>
             </div>
 
             <div class="card-body">

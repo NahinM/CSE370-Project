@@ -23,7 +23,7 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
             <button class="btn btn-info" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft">
-                Menu
+                Filter
             </button>
             </li>
             {% for name,link in navItems %}
@@ -39,7 +39,9 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
             <input class="form-control me-2 dropdown-toggle" type="search" placeholder="Search" aria-label="Search" ng-model="q" ng-change="find()" data-bs-toggle="dropdown" aria-expanded="true"/>
             <ul class="dropdown-menu w-6">
               {% raw %}
-              <li class="p-2" ng-repeat="x in Search_datas"> {{x.title}}</li>
+              <li class="p-2" ng-repeat="x in Search_datas">
+                <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" ng-href="{{x.deta}}">{{x.title}}</a>
+              </li>
               {% endraw %}
             </ul>
             </div>
@@ -72,8 +74,8 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
         <ul class="list-group">
         {% raw %}
         <li class="list-group-item" ng-repeat="x in offcanvas['genre']">
-            <input class="form-check-input me-1" type="checkbox" value="" id="{{x.name}}">
-            <label class="form-check-label stretched-link" for="{{x.name}}">{{x.name}}</label>
+            <input class="form-check-input me-1" type="checkbox" ng-model="x.selected" value="" id="genre{{x.name}}">
+            <label class="form-check-label stretched-link" for="genre{{x.name}}">{{x.name}}</label>
         </li>
         {% endraw %}
         </ul>
@@ -82,8 +84,8 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
         <ul class="list-group">
         {% raw %}
         <li class="list-group-item" ng-repeat="x in offcanvas['main']">
-            <input class="form-check-input me-1" type="checkbox" value="" id="{{x.name}}">
-            <label class="form-check-label stretched-link" for="{{x.name}}">{{x.name}}</label>
+            <input class="form-check-input me-1" type="checkbox" ng-model="x.selected" value="" id="main{{x.name}}">
+            <label class="form-check-label stretched-link" for="main{{x.name}}">{{x.name}}</label>
         </li>
         {% endraw %}
         </ul>
@@ -92,11 +94,13 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
         <ul class="list-group">
         {% raw %}
         <li class="list-group-item" ng-repeat="x in offcanvas['sub']">
-            <input class="form-check-input me-1" type="checkbox" value="" id="{{x.name}}">
-            <label class="form-check-label stretched-link" for="{{x.name}}">{{x.name}}</label>
+            <input class="form-check-input me-1" type="checkbox" ng-model="x.selected" value="" id="sub{{x.name}}">
+            <label class="form-check-label stretched-link" for="sub{{x.name}}">{{x.name}}</label>
         </li>
         {% endraw %}
         </ul>
+        <br>
+        <button type="button" class="btn btn-outline-success" ng-click="getSelected()">Get</button>
     </div>
     </div>
     {% block content %}{% endblock %}
@@ -109,10 +113,37 @@ app.controller('myCtrl', function($scope, $http) {
   
   {% endblock %}
   $scope.offcanvas = {};
+  $scope.mainlist = [];
+  $scope.sublist = [];
+  $scope.genrelist = [];
+
+  $scope.getSelected = function(){
+    $scope.mainlist = [];
+    $scope.sublist = [];
+    $scope.genrelist = [];
+    $scope.offcanvas["genre"].forEach((item)=>{
+        if(item.selected) $scope.genrelist.push(item.name);
+    });
+    $scope.offcanvas["main"].forEach((item)=>{
+        if(item.selected) $scope.mainlist.push(item.name);
+    });
+    $scope.offcanvas["sub"].forEach((item)=>{
+        if(item.selected) $scope.sublist.push(item.name);
+    });
+    $scope.mainctg = $scope.mainlist.join();
+    $scope.subctg = $scope.sublist.join();
+    $scope.genre = $scope.genrelist.join();
+    // console.log($scope.genre);
+    // console.log($scope.mainctg);
+    // console.log($scope.subctg);
+    $scope.find();
+  }
+
   $http.get("/search?f=offcanvas")
     .then(function(response) {
         $scope.offcanvas = response.data;
     });
+
 });
 </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>

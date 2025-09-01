@@ -3,7 +3,7 @@ import mysql.connector,datetime
 from myDatabase import *
 
 app = Flask(__name__)
-nav_items = [("Home","/"),("Assets","/assets"),("Collection","/collections"),("Upload","/upload"),("Saved","/bookmarked")]
+nav_items = [("Home","/"),("Assets","/assets"),("Upload","/upload"),("Bookmarked","/bookmarked")]
 
 # Flask.secret_key
 app.secret_key = b'_5wqdsyht#y2L"Fd4Q8z\n\xec]/'
@@ -183,8 +183,8 @@ def search():
         if q:
             mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
             mycursor = mydb.cursor()
-            mycursor.execute("SELECT title FROM assets WHERE title LIKE %s",("%"+q+"%",))
-            send = [dict(title=str(t[0])) for t in mycursor.fetchall()]
+            mycursor.execute("SELECT id,title FROM assets WHERE title LIKE %s",("%"+q+"%",))
+            send = [dict(detail=f"/detail?id={i}",title=str(t)) for i,t in mycursor.fetchall()]
             mydb.close()
             return jsonify(send if send else [dict(title="not available!")])
         else:
@@ -207,7 +207,10 @@ def search():
         return jsonify(asset_filter(q,main,sub,g,u))
     
     if f=="offcanvas":
-        g = [dict(id=i,name=n) for i,n in get_all("genre","id,name")]
-        m = [dict(id=i,name=n) for i,n in get_all("maincategory","id,name")]
-        s = [dict(id=i,name=n) for i,n in get_all("subcategory","id,name")]
+        main = request.args.get('main')
+        if main: main = [x for x in main.split(",") if x!=""]
+        else : main = None
+        g = [dict(id=i,name=n,selected=False) for i,n in get_all("genre","id,name")]
+        m = [dict(id=i,name=n,selected=False) for i,n in get_all("maincategory","id,name")]
+        s = [dict(id=i,name=n,selected=False) for i,n in get_all("subcategory","id,name")]
         return dict(genre=g,main=m,sub=s)
