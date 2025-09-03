@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br><br>
+<div class="d-flex justify-content-start flex-wrap">
+    {% raw %}
+    <div class="p-3" ng-repeat=" asset in allAsset">
+        <div class="card position-relative" style="width: 18rem;box-shadow: 0px 0px 5px black;">
+            <div class="position-relative">
+                <!-- <div class="btn btn-info active "></div> -->
+                <span class="badge rounded-pill text-bg-info position-absolute top-0 start-100 translate-middle">{{asset.typp}}</span>
+                <img ng-src="{{asset.contentsrc}}" class="card-img-top" alt="..." width="300" height="250">
+            </div>
+
+            <div class="card-body">
+                <h5 class="card-title">{{asset.title}}</h5>
+                <p class="card-text">{{asset.description}}</p>
+                <a ng-href="{{asset.visite}}" class="btn btn-primary">Visite</a>
+                <a ng-href="{{asset.detail}}" class="btn btn-primary">Detail</a>
+            </div>
+        </div>
+    </div>
+    {% endraw %}
+</div>
+{% endblock  %}
+
+{% block script %}
+  $scope.mainctg = "";
+  $scope.subctg = "";
+  $scope.genre = "";
+  $scope.allAsset = [];
+  $scope.q = ""
+  $scope.user = "{{profile if profile else ""}}";
+  $http.get(`/search?f=bookmark&q=&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=${$scope.user}`)
+    .then(function(response) {
+        $scope.allAsset = response.data;
+    });
+  $scope.find = function() {
+    $http.get(`/search?f=bookmark&q=${$scope.q}&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=${$scope.user}`)
+    .then(function(response) {
+        $scope.allAsset = response.data;
+    });
+  }
+{% endblock %}

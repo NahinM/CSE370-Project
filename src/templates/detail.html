@@ -11,7 +11,12 @@
     </li>
     <li class="list-group-item">
         <h5>Uploaded by:</h5>
-        <p>{{getDetail["owner"][0]}}</p>
+        <p>
+            {% if profile == getDetail["owner"][0] %}
+            <span class="badge text-bg-success">you:</span>
+            {% endif %}
+            <span class="badge text-bg-secondary">{{getDetail["owner"][0]}}</span>
+        </p>
     </li>
     <li class="list-group-item">
         <h5>Website:</h5>
@@ -47,7 +52,9 @@
     </li>
 
     <div class="position-absolute top-0 end-0">
+        {% if profile == getDetail["owner"][0] %}
         <button type="button" class="btn btn-outline-danger">Delete</button>
+        {% endif %}
         <button type="button" class="btn btn-outline-light" ng-click="mark()" ng-switch="marked">
         <svg fill="#000000" ng-switch-when="add"
             data-bs-toggle="tooltip" data-bs-placement="top"

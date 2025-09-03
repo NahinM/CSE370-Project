@@ -3,7 +3,7 @@ import mysql.connector,datetime
 from myDatabase import *
 
 app = Flask(__name__)
-nav_items = [("Home","/"),("Assets","/assets"),("Upload","/upload"),("Bookmarked","/bookmarked")]
+nav_items = [("Home","/"),("Assets","/assets"),("Upload","/upload"),("Bookmarked","/mybookmarks")]
 
 # Flask.secret_key
 app.secret_key = b'_5wqdsyht#y2L"Fd4Q8z\n\xec]/'
@@ -143,8 +143,14 @@ def bookmark():
         elif q=="remove":
             del_bookmark(asset_id,session["username"])
             return "add"
-    
     else: return redirect('/login')
+
+@app.route('/mybookmarks')
+def mybookmarks():
+    if "username" not in session: return redirect('/login')
+    return render_template("bookmark.html", navItems = nav_items, profile=session["username"])
+
+        
 
 @app.route("/myupload")
 def myupload():
@@ -156,6 +162,7 @@ def myupload():
 
 @app.route("/detail")
 def detail():
+    if "username" not in session: return redirect('/login')
     bgImg = "https://images.pexels.com/photos/15727975/pexels-photo-15727975.jpeg"
     id = request.args.get('id')
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
@@ -210,6 +217,22 @@ def search():
         if g: g = [x for x in g.split(",") if x!=""]
         else : g = None
         return jsonify(asset_filter(q,main,sub,g,u))
+    
+    if f=="bookmark":
+        main = request.args.get('main')
+        sub = request.args.get('sub')
+        g = request.args.get('genre')
+        q = request.args.get('q')
+        u = request.args.get('user')
+        if u=="": u=None
+        if q=="": q = None
+        if main: main = [x for x in main.split(",") if x!=""]
+        else : main = None
+        if sub: sub = [x for x in sub.split(",") if x!=""]
+        else : sub = None
+        if g: g = [x for x in g.split(",") if x!=""]
+        else : g = None
+        return jsonify(asset_filter_bookmarked(q,main,sub,g,u))
     
     if f=="offcanvas":
         main = request.args.get('main')
