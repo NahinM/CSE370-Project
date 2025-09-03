@@ -126,14 +126,25 @@ def uploads():
 
 
 
-
-
-
 @app.route("/assets")
 def assets():
     prf = None
     if "username" in session: prf = session["username"]
     return render_template("assets.html",navItems = nav_items, profile=prf)
+
+@app.route("/bookmark")
+def bookmark():
+    if "username" in session:
+        asset_id = request.args.get("id")
+        q = request.args.get('q')
+        if q == "add":
+            make_bookmark(asset_id,session["username"])
+            return "remove"
+        elif q=="remove":
+            del_bookmark(asset_id,session["username"])
+            return "add"
+    
+    else: return redirect('/login')
 
 @app.route("/myupload")
 def myupload():
@@ -149,7 +160,7 @@ def detail():
     id = request.args.get('id')
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     mycursor = mydb.cursor()
-    sql = f"select title,type,siteLink,description,createdAt,updatedAt from assets where id={id}"
+    sql = f"select title,type,siteLink,description,createdAt,updatedAt,id from assets where id={id}"
     mycursor.execute(sql)
     getAsset = mycursor.fetchone()
     sql = f"select g.name from genre g, asset_genre r where r.asset_id={id} and g.id=r.genre_id"
@@ -167,13 +178,7 @@ def detail():
     mydb.close()
     if len(getAsset)==0: render_template("detail.html",backimage = bgImg,navItems = nav_items, getDetail = None, profile = session["username"])
 
-    return render_template("detail.html",backimage = bgImg,navItems = nav_items, getDetail = dict(asset=getAsset,genre=getGenre,main=getMain,sub=getSub,owner=getUser), profile=session["username"])
-
-@app.route("/bookmarked")
-def bookmarked():
-    if "username" in session:
-        return render_template("bookmarked.html",navItems = nav_items, profile=session["username"])
-    return "page not found"
+    return render_template("detail.html",backimage = bgImg,navItems = nav_items, getDetail = dict(asset=getAsset,genre=getGenre,main=getMain,sub=getSub,owner=getUser,bookmark=if_bookmarked(id,session["username"])), profile=session["username"])
 
 @app.route('/search')
 def search():
@@ -214,3 +219,10 @@ def search():
         m = [dict(id=i,name=n,selected=False) for i,n in get_all("maincategory","id,name")]
         s = [dict(id=i,name=n,selected=False) for i,n in get_all("subcategory","id,name")]
         return dict(genre=g,main=m,sub=s)
+    
+@app.route('/delete')
+def delete_from():
+    if "username" not in session: return redirect('/')
+    t = request.args.get('type')
+    if t=="asset":
+        pass
