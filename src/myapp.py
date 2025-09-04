@@ -167,7 +167,7 @@ def detail():
     id = request.args.get('id')
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     mycursor = mydb.cursor()
-    sql = f"select title,type,siteLink,description,createdAt,updatedAt,id from assets where id={id}"
+    sql = f"select title,type,siteLink,description,createdAt,updatedAt,id,contentlink from assets where id={id}"
     mycursor.execute(sql)
     getAsset = mycursor.fetchone()
     sql = f"select g.name from genre g, asset_genre r where r.asset_id={id} and g.id=r.genre_id"
@@ -243,9 +243,11 @@ def search():
         s = [dict(id=i,name=n,selected=False) for i,n in get_all("subcategory","id,name")]
         return dict(genre=g,main=m,sub=s)
     
-@app.route('/delete')
+@app.route('/delete' , methods=['GET', 'POST'])
 def delete_from():
     if "username" not in session: return redirect('/')
     t = request.args.get('type')
     if t=="asset":
-        pass
+        id = request.args.get('id')
+        del_asset(id)
+        return redirect('/')

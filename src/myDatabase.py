@@ -103,6 +103,14 @@ def del_asset_relation(table,name):
 def update_asset():
     pass
 
+def del_asset(id):
+    sql = f"delete from assets where id={id}"
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    mycursor = mydb.cursor()
+    mycursor.execute(sql)
+    mydb.commit()
+    mydb.close()
+
 def if_bookmarked(asset_id,user_id):
     sql = f"select count(*) from bookmark where asset_id={asset_id} and user_id='{user_id}'"
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
