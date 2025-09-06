@@ -70,7 +70,7 @@ def insert_unique(table,name):
 def check_insert(table,lst:list):
     for item in lst: insert_unique(table,item)
 
-def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None,user=None):
+def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None,offset=0,user=None):
     sql = f"SELECT DISTINCT a.id,a.title,a.description,a.type,a.siteLink,a.contentlink FROM"
     sql += " assets a,"
     filtering = ""
@@ -86,6 +86,7 @@ def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None,user=None):
     sql += " WHERE a.id=m.asset_id AND a.id=s.asset_id AND a.id=g.asset_id"
     if byUser: sql+= " AND u.asset_id=a.id"
     if q: sql += f" and a.title like '%{q.upper()}%'"
+    sql += f" Limit 20 Offset {offset}"
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
@@ -93,7 +94,7 @@ def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None,user=None):
     mydb.close()
     return send
 
-def asset_filter_bookmarked(q:str,main:list,sub:list,genre:list,byUser=None):
+def asset_filter_bookmarked(q:str,main:list,sub:list,genre:list,byUser=None,offset=0):
     sql = f"SELECT DISTINCT a.id,a.title,a.description,a.type,a.siteLink,a.contentlink FROM"
     sql += " assets a,"
     filtering = ""
@@ -108,6 +109,7 @@ def asset_filter_bookmarked(q:str,main:list,sub:list,genre:list,byUser=None):
     sql += f" (SELECT DISTINCT(asset_id) FROM bookmark where user_id='{byUser}') b"
     sql += " WHERE a.id=m.asset_id AND a.id=s.asset_id AND a.id=g.asset_id AND a.id=b.asset_id"
     if q: sql += f" and a.title like '%{q.upper()}%'"
+    sql += f" Limit 20 Offset {offset}"
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     mycursor = mydb.cursor()
     mycursor.execute(sql)

@@ -209,6 +209,7 @@ def search():
         g = request.args.get('genre')
         q = request.args.get('q')
         u = request.args.get('user')
+        page = request.args.get('page')
         if u=="": u=None
         if q=="": q = None
         if main: main = [x for x in main.split(",") if x!=""]
@@ -219,7 +220,9 @@ def search():
         else : g = None
         user = None
         if "username" in session: user=session["username"]
-        return jsonify(asset_filter(q,main,sub,g,u,user))
+        offset = 0
+        if page: offset= 20*(int(page)-1)
+        return jsonify(asset_filter(q,main,sub,g,u,offset,user))
     
     if f=="bookmark":
         main = request.args.get('main')
@@ -227,6 +230,7 @@ def search():
         g = request.args.get('genre')
         q = request.args.get('q')
         u = request.args.get('user')
+        page = request.args.get('page')
         if u=="": u=None
         if q=="": q = None
         if main: main = [x for x in main.split(",") if x!=""]
@@ -235,7 +239,9 @@ def search():
         else : sub = None
         if g: g = [x for x in g.split(",") if x!=""]
         else : g = None
-        return jsonify(asset_filter_bookmarked(q,main,sub,g,u))
+        offset = 0
+        if page: offset = (int(page)-1)*20
+        return jsonify(asset_filter_bookmarked(q,main,sub,g,u,offset))
     
     if f=="offcanvas":
         main = request.args.get('main')
