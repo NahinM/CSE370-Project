@@ -37,7 +37,7 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
         <form class="d-flex" role="search">
             <div class="dropdown">
             <input class="form-control me-2 dropdown-toggle" type="search" placeholder="Search" aria-label="Search" ng-model="q" ng-change="find()" data-bs-toggle="dropdown" aria-expanded="true"/>
-            <ul class="dropdown-menu w-6">
+            <ul class="dropdown-menu w-6 overflow-auto">
               {% raw %}
               <li class="p-2" ng-repeat="x in Search_datas">
                 <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" ng-href="{{x.deta}}">{{x.title}}</a>
@@ -105,6 +105,63 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
     </div>
     {% block content %}{% endblock %}
 
+    {% if Footer %}
+<div class="container" > 
+  <footer class="py-5"> 
+    <div class="row"> 
+      <div class="col-6 col-md-2 mb-3"> 
+        <h5>KTMS</h5> <ul class="nav flex-column"> 
+          <li class="nav-item mb-2"><a href="/" class="nav-link p-0 text-body-secondary">Home</a></li>
+          <li class="nav-item mb-2"><a href="/assets" class="nav-link p-0 text-body-secondary">Assets</a></li>
+          <li class="nav-item mb-2"><a href="/bookmarks" class="nav-link p-0 text-body-secondary">Bookmarks</a></li>
+          <li class="nav-item mb-2"><a href="/myuploads" class="nav-link p-0 text-body-secondary">Myuploads</a></li> 
+          <li class="nav-item mb-2"><a href="/signup" class="nav-link p-0 text-body-secondary">Sign Up</a></li> 
+        </ul> 
+      </div> 
+      <div class="col-6 col-md-2 mb-3"> 
+        <h5>Contact</h5> 
+        <ul class="nav flex-column"> 
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">FaceBook</a></li> 
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Instagram</a></li> 
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Discord</a></li> 
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Email</a></li> 
+          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Help center</a></li> 
+        </ul> 
+      </div> 
+      <div class="col-md-5 offset-md-1 mb-3"> 
+        <form> 
+          <h5>Subscribe to our newsletter</h5> 
+          <p>Monthly digest of what's new and exciting from us.</p> 
+          <div class="d-flex flex-column flex-sm-row w-100 gap-2"> 
+            <label for="newsletter1" class="visually-hidden">Email address</label> 
+            <input id="newsletter1" type="email" class="form-control" placeholder="Email address"> 
+            <button class="btn btn-primary" type="button">Subscribe</button> 
+          </div> 
+        </form> 
+      </div> 
+    </div> 
+    <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top"> 
+      <p>© 2025 Company, Inc. All rights reserved.</p> 
+      <ul class="list-unstyled d-flex"> 
+        <li class="ms-3">
+          <a class="link-body-emphasis" href="#" aria-label="Instagram">
+          <svg class="bi" width="24" height="24">
+            <use xlink:href="#instagram"></use>
+          </svg>
+        </a>
+      </li> 
+      <li class="ms-3">
+        <a class="link-body-emphasis" href="#" aria-label="Facebook">
+          <svg class="bi" width="24" height="24" aria-hidden="true">
+            <use xlink:href="#facebook"></use>
+          </svg>
+        </a>
+      </li> 
+    </ul> 
+  </div> 
+</footer> 
+</div>
+{% endif %}
 <script>
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope, $http) {

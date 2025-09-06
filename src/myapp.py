@@ -11,8 +11,8 @@ app.secret_key = b'_5wqdsyht#y2L"Fd4Q8z\n\xec]/'
 @app.route("/")
 def home():
     if "username" in session:
-        return render_template("home.html" , navItems = nav_items, profile = session["username"])
-    return render_template("home.html" , navItems = nav_items, profile = None)
+        return render_template("home.html" , navItems = nav_items, profile = session["username"],Footer=True)
+    return render_template("home.html" , navItems = nav_items, profile = None,Footer=True)
 
 @app.route("/login" , methods=['GET', 'POST'])
 def login():
@@ -74,7 +74,7 @@ def myprofile():
     mycursor.execute(f"SELECT id,fname,lname,email from users where id='{id}'")
     ret = mycursor.fetchall()
     mydb.close()
-    return render_template("profile.html", profile=session["username"], getDetail = ret[0])
+    return render_template("profile.html", profile=session["username"], getDetail = ret[0],Footer=True)
 
 
 @app.route("/upload" , methods=['GET', 'POST'])
@@ -125,7 +125,7 @@ def uploads():
 def assets():
     prf = None
     if "username" in session: prf = session["username"]
-    return render_template("assets.html",navItems = nav_items, profile=prf)
+    return render_template("assets.html",navItems = nav_items, profile=prf,Footer=True)
 
 @app.route("/bookmark")
 def bookmark():
@@ -143,7 +143,7 @@ def bookmark():
 @app.route('/mybookmarks')
 def mybookmarks():
     if "username" not in session: return redirect('/login')
-    return render_template("bookmark.html", navItems = nav_items, profile=session["username"])
+    return render_template("bookmark.html", navItems = nav_items, profile=session["username"],Footer=True)
 
 
 
@@ -152,7 +152,7 @@ def myupload():
     prf = None
     if "username" in session:
         prf = session["username"]
-        return render_template("myuploads.html",navItems = nav_items, profile=prf)
+        return render_template("myuploads.html",navItems = nav_items, profile=prf,Footer=True)
     return redirect('/login')
 
 @app.route("/detail")

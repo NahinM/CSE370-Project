@@ -32,6 +32,13 @@
     </div>
     {% endraw %}
 </div>
+<div class="d-flex justify-content-between" style="border: 1px solid black;border-radius: 10px;width: 75%;margin-left: 12.5%;">
+  <button type="button" class="btn btn-outline-secondary" ng-click="turnPage(-1)">Previous</button>
+  {% raw %}
+  <div class="p-2">Page {{pageno}}</div>
+  {% endraw %}
+  <button type="button" class="btn btn-outline-secondary" ng-click="turnPage(1)">Next</button>
+</div>
 {% endblock  %}
 
 {% block script %}
@@ -41,14 +48,25 @@
   $scope.allAsset = [];
   $scope.q = ""
   $scope.user = "{{profile if profile else ""}}";
-  $http.get(`/search?f=asset&q=&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=${$scope.user}`)
-    .then(function(response) {
-        $scope.allAsset = response.data;
-    });
+
+  $scope.pageno = 1;
+
+    $scope.turnPage = function(a){
+        $scope.pageno+=a;
+        $scope.pageno = Math.max($scope.pageno,1);
+        if($scope.allAsset.length==0 && a==1){
+            $scope.pageno-=1;
+            return;
+        }
+        $scope.find();
+    }
+  
   $scope.find = function() {
-    $http.get(`/search?f=asset&q=${$scope.q}&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=${$scope.user}`)
+    $http.get(`/search?f=asset&q=${$scope.q}&main=${$scope.mainctg}&sub=${$scope.subctg}&genre=${$scope.genre}&user=${$scope.user}&page=${$scope.pageno}`)
     .then(function(response) {
         $scope.allAsset = response.data;
     });
   }
+  $scope.find();
+
 {% endblock %}
