@@ -77,11 +77,6 @@ def myprofile():
     return render_template("profile.html", profile=session["username"], getDetail = ret[0])
 
 
-
-
-
-
-
 @app.route("/upload" , methods=['GET', 'POST'])
 def uploads():
 
@@ -222,7 +217,9 @@ def search():
         else : sub = None
         if g: g = [x for x in g.split(",") if x!=""]
         else : g = None
-        return jsonify(asset_filter(q,main,sub,g,u))
+        user = None
+        if "username" in session: user=session["username"]
+        return jsonify(asset_filter(q,main,sub,g,u,user))
     
     if f=="bookmark":
         main = request.args.get('main')

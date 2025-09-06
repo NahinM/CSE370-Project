@@ -70,7 +70,7 @@ def insert_unique(table,name):
 def check_insert(table,lst:list):
     for item in lst: insert_unique(table,item)
 
-def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None):
+def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None,user=None):
     sql = f"SELECT DISTINCT a.id,a.title,a.description,a.type,a.siteLink,a.contentlink FROM"
     sql += " assets a,"
     filtering = ""
@@ -89,7 +89,7 @@ def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None):
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
-    send = [dict(id=str(i),title=str(tl),description=str(d),contentsrc=cl,typp=str(tp),visite=str(l),detail=f"/detail?id={i}") for i,tl,d,tp,l,cl in mycursor.fetchall()]
+    send = [dict(id=str(i),title=str(tl),description=str(d),contentsrc=cl,typp=str(tp),visite=str(l),detail=f"/detail?id={i}",marked=if_bookmarked(i,user)) for i,tl,d,tp,l,cl in mycursor.fetchall()]
     mydb.close()
     return send
 
@@ -150,6 +150,7 @@ def del_asset(id):
     mydb.close()
 
 def if_bookmarked(asset_id,user_id):
+    if asset_id==None or user_id==None: return False
     sql = f"select count(*) from bookmark where asset_id={asset_id} and user_id='{user_id}'"
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     mycursor = mydb.cursor()
