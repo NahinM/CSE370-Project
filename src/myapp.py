@@ -2,6 +2,9 @@ from flask import Flask,request,render_template,jsonify,session,redirect,url_for
 import mysql.connector,datetime
 from myDatabase import *
 
+# to run app
+# flask --app myapp --debug run
+
 app = Flask(__name__)
 nav_items = [("Home","/"),("Assets","/assets"),("Upload","/upload"),("Bookmarked","/mybookmarks")]
 
