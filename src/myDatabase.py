@@ -139,10 +139,6 @@ def add_relation(typp,asset_id,name):
     insert_unique(table,name)
     insert_to(r_table,(asset_id,str(get_id(table,name))))
 
-def update_tbl(table,val,change,id):
-    
-    pass
-
 def del_asset(id):
     sql = f"delete from assets where id={id}"
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
