@@ -1,7 +1,10 @@
 import mysql.connector
 
+PORT = 3307
+
 def sql_get(sql):
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     ret = mycursor.fetchall()
@@ -9,14 +12,16 @@ def sql_get(sql):
     return ret
 
 def sql_run(sql):
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     mydb.commit()
     mydb.close()
 
 def getNextId(table:str):
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     sql = f"select max(id) from {table}"
     mycursor = mydb.cursor()
     mycursor.execute(sql)
@@ -28,7 +33,8 @@ def getNextId(table:str):
 
 def get_id(table:str,val:str):
     sql = f"select id from {table} where name='{val}'"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     ret = mycursor.fetchone()
@@ -38,7 +44,8 @@ def get_id(table:str,val:str):
 
 def insert_to(table:str,val:tuple):
     sql = f"INSERT INTO {table} VALUES({" ,".join(["%s"]*len(val))})"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql,val)
     mydb.commit()
@@ -47,7 +54,8 @@ def insert_to(table:str,val:tuple):
 
 def count_forname(table,name):
     sql = f"select count(*) from {table} where name='{name}'"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     ret = mycursor.fetchone()
@@ -55,7 +63,8 @@ def count_forname(table,name):
     return ret[0]
 
 def get_all(table,val):
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     sql = f"select {val} from {table}"
     mycursor = mydb.cursor()
     mycursor.execute(sql)
@@ -87,7 +96,8 @@ def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None,offset=0,user=N
     if byUser: sql+= " AND u.asset_id=a.id"
     if q: sql += f" and a.title like '%{q.upper()}%'"
     sql += f" Limit 20 Offset {offset}"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     send = [dict(id=str(i),title=str(tl),description=str(d),contentsrc=cl,typp=str(tp),visite=str(l),detail=f"/detail?id={i}",marked=if_bookmarked(i,user)) for i,tl,d,tp,l,cl in mycursor.fetchall()]
@@ -110,7 +120,8 @@ def asset_filter_bookmarked(q:str,main:list,sub:list,genre:list,byUser=None,offs
     sql += " WHERE a.id=m.asset_id AND a.id=s.asset_id AND a.id=g.asset_id AND a.id=b.asset_id"
     if q: sql += f" and a.title like '%{q.upper()}%'"
     sql += f" Limit 20 Offset {offset}"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     send = [dict(id=str(i),title=str(tl),description=str(d),contentsrc=cl,typp=str(tp),visite=str(l),detail=f"/detail?id={i}") for i,tl,d,tp,l,cl in mycursor.fetchall()]
@@ -124,7 +135,8 @@ def del_asset_relation(typp,asset_id,r_id):
     elif typp=="sub": r_table,search = "asset_subctg","sub_id"
     else: return
     sql = f"delete from {r_table} where asset_id={asset_id} and {search}={r_id}"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     mydb.commit()
@@ -141,7 +153,8 @@ def add_relation(typp,asset_id,name):
 
 def del_asset(id):
     sql = f"delete from assets where id={id}"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     mydb.commit()
@@ -150,7 +163,8 @@ def del_asset(id):
 def if_bookmarked(asset_id,user_id):
     if asset_id==None or user_id==None: return False
     sql = f"select count(*) from bookmark where asset_id={asset_id} and user_id='{user_id}'"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     ret = mycursor.fetchone()
@@ -160,7 +174,8 @@ def if_bookmarked(asset_id,user_id):
 def make_bookmark(asset_id,user_id):
     if if_bookmarked(asset_id,user_id): return
     sql = f"insert into bookmark values('{user_id}', {asset_id})"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     mydb.commit()
@@ -169,7 +184,8 @@ def make_bookmark(asset_id,user_id):
 def del_bookmark(asset_id,user_id):
     if not if_bookmarked(asset_id,user_id): return
     sql = f"delete from bookmark where asset_id={asset_id} and user_id='{user_id}'"
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
     mydb.commit()

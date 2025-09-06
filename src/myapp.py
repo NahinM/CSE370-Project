@@ -2,6 +2,7 @@ from flask import Flask,request,render_template,jsonify,session,redirect,url_for
 import mysql.connector,datetime
 from myDatabase import *
 
+PORT = PORT
 # to run app
 # flask --app myapp --debug run
 
@@ -25,11 +26,7 @@ def login():
         id = request.form['id']
         pswd = request.form['pass']
         sql = f"SELECT id,password from users where id='{id}'"
-        mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
-        mycursor = mydb.cursor()
-        mycursor.execute(sql)
-        ret = mycursor.fetchall()
-        mydb.close()
+        ret = sql_get(sql)
         if len(ret)==0: return render_template("login.html", backimage = bgImg,navItems = nav_items, message = ("username not found",None))
         db_id,db_pswd = ret[0]
         if db_pswd!=pswd: return render_template("login.html", backimage = bgImg,navItems = nav_items, message = (None,"password incorrect"))
@@ -50,11 +47,7 @@ def signup():
         email = request.form["email"]
 
         sql = f"SELECT id,password from users where id='{id}'"
-        mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
-        mycursor = mydb.cursor()
-        mycursor.execute(sql)
-        ret = mycursor.fetchall()
-        mydb.close()
+        ret = sql_get(sql)
         if len(ret)!=0: return render_template("signup.html" , backimage = bgImg ,navItems = nav_items , msg = "username already taken!")
     
         insert_to("users",(id,passd,fname,lname,email))
@@ -72,7 +65,8 @@ def logout():
 @app.route("/myprofile")
 def myprofile():
     id = session["username"]
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     mycursor.execute(f"SELECT id,fname,lname,email from users where id='{id}'")
     ret = mycursor.fetchall()
@@ -163,7 +157,8 @@ def detail():
     if "username" not in session: return redirect('/login')
     bgImg = "https://images.pexels.com/photos/15727975/pexels-photo-15727975.jpeg"
     id = request.args.get('id')
-    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    global PORT
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
     sql = f"select title,type,siteLink,description,createdAt,updatedAt,id,contentlink from assets where id={id}"
     mycursor.execute(sql)
@@ -197,7 +192,8 @@ def search():
     if f=="search":
         q = request.args.get('q')
         if q:
-            mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+            global PORT
+            mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
             mycursor = mydb.cursor()
             mycursor.execute("SELECT id,title FROM assets WHERE title LIKE %s",("%"+q+"%",))
             send = [dict(detail=f"/detail?id={i}",title=str(t)) for i,t in mycursor.fetchall()]
