@@ -1,5 +1,20 @@
 import mysql.connector
 
+def sql_get(sql):
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    mycursor = mydb.cursor()
+    mycursor.execute(sql)
+    ret = mycursor.fetchall()
+    mydb.close()
+    return ret
+
+def sql_run(sql):
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    mycursor = mydb.cursor()
+    mycursor.execute(sql)
+    mydb.commit()
+    mydb.close()
+
 def getNextId(table:str):
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     sql = f"select max(id) from {table}"
@@ -16,9 +31,10 @@ def get_id(table:str,val:str):
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
     mycursor = mydb.cursor()
     mycursor.execute(sql)
-    ret = mycursor.fetchall()
+    ret = mycursor.fetchone()
     mydb.close()
-    return ret[0][0]
+    if ret: return ret[0]
+    return None
 
 def insert_to(table:str,val:tuple):
     sql = f"INSERT INTO {table} VALUES({" ,".join(["%s"]*len(val))})"
@@ -47,10 +63,12 @@ def get_all(table,val):
     mydb.close()
     return ret
 
+def insert_unique(table,name):
+    name = name.strip()
+    if name and count_forname(table,name)==0: insert_to(table,(getNextId(table),name.strip()))
+
 def check_insert(table,lst:list):
-    for item in lst:
-        if item=="": continue
-        if count_forname(table,item)==0: insert_to(table,(getNextId(table),item.strip()))
+    for item in lst: insert_unique(table,item)
 
 def asset_filter(q:str,main:list,sub:list,genre:list,byUser=None):
     sql = f"SELECT DISTINCT a.id,a.title,a.description,a.type,a.siteLink,a.contentlink FROM"
@@ -97,10 +115,30 @@ def asset_filter_bookmarked(q:str,main:list,sub:list,genre:list,byUser=None):
     mydb.close()
     return send
 
-def del_asset_relation(table,name):
-    pass
+def del_asset_relation(typp,asset_id,r_id):
+    r_table,search = "",""
+    if typp=="genre":r_table,search = "asset_genre","genre_id"
+    elif typp=="main": r_table,search = "asset_mainctg","main_id"
+    elif typp=="sub": r_table,search = "asset_subctg","sub_id"
+    else: return
+    sql = f"delete from {r_table} where asset_id={asset_id} and {search}={r_id}"
+    mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=3307)
+    mycursor = mydb.cursor()
+    mycursor.execute(sql)
+    mydb.commit()
+    mydb.close()
 
-def update_asset():
+def add_relation(typp,asset_id,name):
+    table,r_table = "",""
+    if typp=="genre": table,r_table = "genre","asset_genre"
+    elif typp=="main": table,r_table = "maincategory","asset_mainctg"
+    elif typp=="sub": table,r_table = "subcategory","asset_subctg"
+    else: return
+    insert_unique(table,name)
+    insert_to(r_table,(asset_id,str(get_id(table,name))))
+
+def update_tbl(table,val,change,id):
+    
     pass
 
 def del_asset(id):

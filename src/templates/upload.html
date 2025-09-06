@@ -2,30 +2,30 @@
 
 {% block content %}
 <br><br><br>
-<div class="container" style="backdrop-filter: blur(10px);">
+<div class="container">
     <h1>Upload An Asset</h1>
     <form action="/upload" , method="post">
     <div class="input-group mb-3 w-75">
     <span class="input-group-text" id="title">Title</span>
-    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="title", name="title">
+    <input type="text" class="form-control"  aria-describedby="title" name="title">
     </div>
 
     <div class="input-group mb-3 w-75">
     <span class="input-group-text" id="link">Site Link</span>
-    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="link" name="site">
+    <input type="text" class="form-control"  aria-describedby="link" name="site">
     </div>
 
     <div class="input-group mb-3 w-75">
     <span class="input-group-text" id="clink">Content Link</span>
-    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="clink" name="clink">
+    <input type="text" class="form-control"  aria-describedby="clink" name="clink">
     </div>
 
     <div class="mb-3">
     <label for="description" class="form-label">Description</label>
-    <textarea class="form-control" id="description" rows="3" name="description" name="description"></textarea>
+    <textarea class="form-control" id="description" rows="3" name="description"></textarea>
     </div>
 
-    <select class="form-select w-25" aria-label="Default select example" name="type">
+    <select class="form-select w-25"  name="type">
     <option selected>Select a type</option>
     <option value="video">Video</option>
     <option value="audio">Audio</option>

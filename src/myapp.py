@@ -122,7 +122,7 @@ def uploads():
         for item in sub: insert_to("asset_subctg",(asset_id,get_id("subcategory",item)))
     
     if "username" not in session: return redirect("/login")
-    return render_template("uploads.html", navItems = nav_items,profile=session["username"])
+    return render_template("upload.html", navItems = nav_items,profile=session["username"])
 
 
 
@@ -150,7 +150,7 @@ def mybookmarks():
     if "username" not in session: return redirect('/login')
     return render_template("bookmark.html", navItems = nav_items, profile=session["username"])
 
-        
+
 
 @app.route("/myupload")
 def myupload():
@@ -186,6 +186,12 @@ def detail():
     if len(getAsset)==0: render_template("detail.html",backimage = bgImg,navItems = nav_items, getDetail = None, profile = session["username"])
 
     return render_template("detail.html",backimage = bgImg,navItems = nav_items, getDetail = dict(asset=getAsset,genre=getGenre,main=getMain,sub=getSub,owner=getUser,bookmark=if_bookmarked(id,session["username"])), profile=session["username"])
+
+@app.route('/editasset')
+def eidt_asset():
+    if "username" not in session: return redirect('/login')
+    id = request.args.get('id')
+    return render_template("editasset.html",navItems = nav_items, profile = session["username"], a_id=id)
 
 @app.route('/search')
 def search():
@@ -243,11 +249,49 @@ def search():
         s = [dict(id=i,name=n,selected=False) for i,n in get_all("subcategory","id,name")]
         return dict(genre=g,main=m,sub=s)
     
+    if f=="singleasset":
+        id = request.args.get('id')
+        a_ret = sql_get(f"select id,title,description,sitelink,contentlink from assets where id={id}")
+        g_sql = f"select g.id,g.name from genre g, (select distinct genre_id from asset_genre where asset_id={id}) r where g.id=r.genre_id"
+        m_sql = f"select m.id,m.name from maincategory m, (select distinct main_id from asset_mainctg where asset_id={id}) r where m.id=r.main_id"
+        s_sql = f"select s.id,s.name from subcategory s, (select distinct sub_id from asset_subctg where asset_id={id}) r where s.id=r.sub_id"
+        return jsonify({
+                "asset": [dict(id=i,title=tl,description=des,site=sln,content=cln) for i,tl,des,sln,cln in a_ret][0],
+                "genre": [dict(id=i,name=n) for i,n in sql_get(g_sql)],
+                "main" : [dict(id=i,name=n) for i,n in sql_get(m_sql)],
+                "sub": [dict(id=i,name=n) for i,n in sql_get(s_sql)]
+        })
+    
 @app.route('/delete' , methods=['GET', 'POST'])
 def delete_from():
     if "username" not in session: return redirect('/')
     t = request.args.get('type')
+    a_id = request.args.get('assetid')
     if t=="asset":
-        id = request.args.get('id')
-        del_asset(id)
-        return redirect('/')
+        del_asset(a_id)
+        return redirect('/assets')
+    elif t in ["genre","main","sub"]:
+        r_id = request.args.get('relid')
+        del_asset_relation(t,a_id,r_id)
+        return f"deleted from {t}"
+    else: return "Page not found"
+
+
+@app.route('/update' ,  methods=['GET', 'POST'])
+def update():
+    if request.method == "POST":
+        id = request.form['id']
+        title = request.form['title']
+        des = request.form['description']
+        site = request.form['site']
+        content = request.form['content']
+        d = datetime.datetime.now().strftime("%Y-%m-%d")
+        sql_run(f"update assets set title='{title}', description='{des}', siteLink='{site}', contentlink='{content}', updatedAt='{d}' where id={id}")
+        return "asset info updated"
+    t = request.args.get('type')
+    a_id = request.args.get('assetid')
+    if t in ["genre","main","sub"]:
+        name = request.args.get("name")
+        add_relation(t,a_id,name)
+        return f"name: {name} added for {t}"
+    else: return "Page not found"

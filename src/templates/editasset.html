@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br><br>
+<div class="container">
+    <h1>Edit Asset</h1>
+    {% raw %}
+    <div class="input-group mb-3 w-75">
+    <span class="input-group-text">Title</span>
+    <input type="text" class="form-control" ng-model="asset_detail.title">
+    </div>
+    <div class="input-group mb-3 w-75">
+    <span class="input-group-text">Site Link</span>
+    <input type="text" class="form-control" ng-model="asset_detail.site">
+    </div>
+    <div class="input-group mb-3 w-75">
+    <span class="input-group-text">Content Link</span>
+    <input type="text" class="form-control" ng-model="asset_detail.content">
+    </div>
+    <div class="mb-3">
+    <label for="description" class="form-label">Description</label>
+    <textarea class="form-control" rows="5" id="description" ng-model="asset_detail.description"></textarea>
+    </div>
+    {% endraw %}
+    <button class="btn btn-outline-success" type="button" ng-click="update_asset()" data-bs-toggle="modal" data-bs-target="#actionInfo">Save</button>
+    <br><br><br>
+    <div class=" mb-3 w-50">
+    <span class="input-group-text">Genre</span>
+    
+    {% raw %}
+    <ol class="list-group list-group-numbered">
+    <li class="list-group-item d-flex justify-content-between align-items-center" ng-repeat="x in genre_detail">
+        {{x.name}}
+        <span class="badge text-bg-danger rounded-pill" ng-click="del_relation('genre',x.id)" data-bs-toggle="modal" data-bs-target="#actionInfo">delete</span>
+    </li>
+    </ol>
+    <div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Add new" ng-model="genre_name">
+    <button class="btn btn-outline-success" type="button" ng-click="add_relation('genre',genre_name)" data-bs-toggle="modal" data-bs-target="#actionInfo">Add</button>
+    </div>
+    </div>
+
+    <div class=" mb-3 w-50">
+    <span class="input-group-text">Main Catagory</span>
+    <ol class="list-group list-group-numbered">
+    <li class="list-group-item d-flex justify-content-between align-items-center" ng-repeat="x in main_detail">
+        {{x.name}}
+        <span class="badge text-bg-danger rounded-pill" ng-click="del_relation('main',x.id)" data-bs-toggle="modal" data-bs-target="#actionInfo">delete</span>
+    </li>
+    </ol>
+    <div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Add new" ng-model="main_name">
+    <button class="btn btn-outline-success" type="button" ng-click="add_relation('main',main_name)" data-bs-toggle="modal" data-bs-target="#actionInfo">Add</button>
+    </div>
+    </div>
+
+    <div class=" mb-3 w-50">
+    <span class="input-group-text">Sub Catagory</span>
+    
+    <ol class="list-group list-group-numbered">
+    <li class="list-group-item d-flex justify-content-between align-items-center" ng-repeat="x in sub_detail">
+        {{x.name}}
+        <span class="badge text-bg-danger rounded-pill" ng-click="del_relation('sub',x.id)" data-bs-toggle="modal" data-bs-target="#actionInfo">delete</span>
+    </li>
+    </ol>
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Add new" ng-model="sub_name">
+        <button class="btn btn-outline-success" type="button" ng-click="add_relation('sub',sub_name)" data-bs-toggle="modal" data-bs-target="#actionInfo">Add</button>
+    </div>
+    {% endraw %}
+    </div>
+</div>
+
+{% raw %}
+<!-- Modal -->
+<div class="modal fade" id="actionInfo" tabindex="-1" aria-labelledby="actionInfoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="actionInfoLabel">Action Info</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{modal_message}}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Ok</button>
+    </div>
+</div>
+</div>
+</div>
+{% endraw %}
+{% endblock  %}
+
+{% block script %}
+$scope.asset_detail = {};
+$scope.genre_detail = [];
+$scope.main_detail = [];
+$scope.sub_detail = [];
+$scope.modal_message = "message";
+
+$scope.get_all_detail = function(){
+    $http.get("/search?f=singleasset&id={{a_id}}")
+    .then(function(response) {
+        let data = response.data;
+        $scope.asset_detail = data.asset;
+        $scope.genre_detail = data.genre;
+        $scope.main_detail = data.main;
+        $scope.sub_detail = data.sub;
+    });
+}
+$scope.get_all_detail();
+
+$scope.del_relation = function(type,rId){
+    let aId = "{{a_id}}";
+
+    $http.get(`/delete?type=${type}&assetid=${aId}&relid=${rId}`)
+    .then(function(response) {
+        $scope.modal_message = response.data
+        $scope.get_all_detail();
+    });
+}
+
+$scope.add_relation = function(type,name){
+    let aId = "{{a_id}}";
+    
+    $http.get(`/update?type=${type}&assetid=${aId}&name=${name}`)
+    .then(function(response) {
+        
+        $scope.modal_message = response.data
+        $scope.genre_name = "";
+        $scope.main_name = "";
+        $scope.sub_name = "";
+        $scope.get_all_detail();
+    });
+}
+
+$scope.update_asset = function(){
+    $http({
+    method: 'POST',
+    url: '/update',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    transformRequest: function(obj) {
+        var str = [];
+        for (var p in obj)
+            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        return str.join("&");
+    },
+    data:  $scope.asset_detail
+    }).then(function(response) {
+        $scope.modal_message = response.data
+    });
+}
+{% endblock %}
