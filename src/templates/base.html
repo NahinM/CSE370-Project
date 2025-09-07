@@ -27,7 +27,7 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
             </button>
             </li>
             {% for name,link in navItems %}
-            <li class="nav-item">
+            <li class="nav-item" style="padding: 0px 3px;">
             <a type="button" class="btn btn-dark" href="{{link}}">
                 {{name}}
             </a>
@@ -164,6 +164,46 @@ style="background-image: url({{backimage}}); width: 100%; height: 50vh; backgrou
 {% endif %}
 <script>
 var app = angular.module('myApp', []);
+// Allow safe loading of common video providers in iframes
+app.config(function($sceDelegateProvider) {
+  $sceDelegateProvider.resourceUrlWhitelist([
+    'self',
+    'http://www.youtube.com/**', 'https://www.youtube.com/**',
+    'http://youtube.com/**', 'https://youtube.com/**',
+    'http://youtu.be/**', 'https://youtu.be/**',
+    'http://www.youtube-nocookie.com/**', 'https://www.youtube-nocookie.com/**',
+    'http://player.vimeo.com/**', 'https://player.vimeo.com/**'
+  ]);
+});
+
+// Filter to convert regular video links to embeddable URLs
+app.filter('toEmbed', function() {
+  return function(url) {
+    if (!url) return url;
+    try {
+      // YouTube (watch, share, or shorts)
+      var ytId = null;
+      var m;
+      if ((m = url.match(/[?&]v=([^&#]+)/))) ytId = m[1];
+      if (!ytId && (m = url.match(/youtu\.be\/([^?&#]+)/))) ytId = m[1];
+      if (!ytId && (m = url.match(/youtube\.com\/shorts\/([^?&#]+)/))) ytId = m[1];
+      if (ytId) return 'https://www.youtube.com/embed/' + ytId;
+
+      // Vimeo simple numeric id
+      if ((m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/))) {
+        return 'https://player.vimeo.com/video/' + m[1];
+      }
+    } catch (e) {}
+    return url;
+  };
+});
+
+// Filter to trust a URL for use in an iframe src
+app.filter('trustAsResourceUrl', function($sce) {
+  return function(val) {
+    return $sce.trustAsResourceUrl(val);
+  };
+});
 app.controller('myCtrl', function($scope, $http) {
     $scope.Search_datas = [];
   {% block script %}

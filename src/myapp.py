@@ -2,7 +2,6 @@ from flask import Flask,request,render_template,jsonify,session,redirect,url_for
 import mysql.connector,datetime
 from myDatabase import *
 
-PORT = PORT
 # to run app
 # flask --app myapp --debug run
 

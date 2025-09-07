@@ -8,8 +8,9 @@
         {% if getDetail["asset"][1] == "graphics" %}
         <img src="{{getDetail["asset"][7]}}" alt="..." width="400" height="300">
         {% elif getDetail["asset"][1] == "video" %}
-        <div class="ratio ratio-16x9">
-        <iframe src="{{getDetail["asset"][7]}}" title="YouTube video" allowfullscreen></iframe>
+        <div class="ratio ratio-16x9" ng-init="detailSrc='{{getDetail['asset'][7]}}'">
+        <iframe title="Video" allowfullscreen
+          {% raw %}ng-src="{{ detailSrc | toEmbed | trustAsResourceUrl }}"{% endraw %}></iframe>
         </div>
         {% endif %}
     </div>
@@ -29,7 +30,7 @@
     </li>
     <li class="list-group-item">
         <h5>Website:</h5>
-        <a href="">{{getDetail["asset"][2]}}</a>
+        <a href="{{getDetail["asset"][2]}}">{{getDetail["asset"][2]}}</a>
     </li>
     <li class="list-group-item">
         <h5>Description</h5>
