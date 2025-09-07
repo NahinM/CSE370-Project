@@ -2,7 +2,7 @@ import mysql.connector
 
 PORT = 3307
 
-def sql_get(sql):
+def sql_get(sql:str):
     global PORT
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
@@ -11,7 +11,7 @@ def sql_get(sql):
     mydb.close()
     return ret
 
-def sql_run(sql):
+def sql_run(sql:str):
     global PORT
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     mycursor = mydb.cursor()
@@ -52,7 +52,7 @@ def insert_to(table:str,val:tuple):
     mydb.close()
 
 
-def count_forname(table,name):
+def count_forname(table:str,name:str):
     sql = f"select count(*) from {table} where name='{name}'"
     global PORT
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
@@ -62,7 +62,7 @@ def count_forname(table,name):
     mydb.close()
     return ret[0]
 
-def get_all(table,val):
+def get_all(table:str,val:str):
     global PORT
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
     sql = f"select {val} from {table}"
@@ -72,7 +72,7 @@ def get_all(table,val):
     mydb.close()
     return ret
 
-def insert_unique(table,name):
+def insert_unique(table:str,name:str):
     name = name.strip()
     if name and count_forname(table,name)==0: insert_to(table,(getNextId(table),name.strip()))
 
@@ -128,7 +128,7 @@ def asset_filter_bookmarked(q:str,main:list,sub:list,genre:list,byUser=None,offs
     mydb.close()
     return send
 
-def del_asset_relation(typp,asset_id,r_id):
+def del_asset_relation(typp:str,asset_id:str,r_id:str):
     r_table,search = "",""
     if typp=="genre":r_table,search = "asset_genre","genre_id"
     elif typp=="main": r_table,search = "asset_mainctg","main_id"
@@ -142,7 +142,7 @@ def del_asset_relation(typp,asset_id,r_id):
     mydb.commit()
     mydb.close()
 
-def add_relation(typp,asset_id,name):
+def add_relation(typp:str,asset_id:str,name:str):
     table,r_table = "",""
     if typp=="genre": table,r_table = "genre","asset_genre"
     elif typp=="main": table,r_table = "maincategory","asset_mainctg"
@@ -151,7 +151,7 @@ def add_relation(typp,asset_id,name):
     insert_unique(table,name)
     insert_to(r_table,(asset_id,str(get_id(table,name))))
 
-def del_asset(id):
+def del_asset(id:str):
     sql = f"delete from assets where id={id}"
     global PORT
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
@@ -160,7 +160,7 @@ def del_asset(id):
     mydb.commit()
     mydb.close()
 
-def if_bookmarked(asset_id,user_id):
+def if_bookmarked(asset_id:str,user_id:str):
     if asset_id==None or user_id==None: return False
     sql = f"select count(*) from bookmark where asset_id={asset_id} and user_id='{user_id}'"
     global PORT
@@ -171,7 +171,7 @@ def if_bookmarked(asset_id,user_id):
     mydb.close()
     return ret[0]>0
 
-def make_bookmark(asset_id,user_id):
+def make_bookmark(asset_id:str,user_id:str):
     if if_bookmarked(asset_id,user_id): return
     sql = f"insert into bookmark values('{user_id}', {asset_id})"
     global PORT
@@ -181,7 +181,7 @@ def make_bookmark(asset_id,user_id):
     mydb.commit()
     mydb.close()
 
-def del_bookmark(asset_id,user_id):
+def del_bookmark(asset_id:str,user_id:str):
     if not if_bookmarked(asset_id,user_id): return
     sql = f"delete from bookmark where asset_id={asset_id} and user_id='{user_id}'"
     global PORT

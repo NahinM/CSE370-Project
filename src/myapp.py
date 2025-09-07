@@ -63,6 +63,7 @@ def logout():
 
 @app.route("/myprofile")
 def myprofile():
+    if "username" not in session: return redirect('/login')
     id = session["username"]
     global PORT
     mydb = mysql.connector.connect(host="localhost",user="root",password="",database = "ktms",port=PORT)
