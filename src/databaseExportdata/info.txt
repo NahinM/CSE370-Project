@@ -1,0 +1,3 @@
+The database was created using xampp. So its better to use xampp and import the ktms.sql file into xampp.
+If the server raises error for database connection it means the port needs to be changed. just make the 
+global PORT=3307 to PORT=3306 or the port you configured to use xampp MySQL server.
